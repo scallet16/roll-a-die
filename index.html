@@ -1,0 +1,1835 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>굴려봐! 수학</title>
+<style>
+  :root{
+    --bg:#fffaf2;
+    --card:#ffffff;
+    --ink:#233044;
+    --muted:#6d7787;
+    --line:#e7e0d7;
+    --accent:#ff9f6e;
+    --accent2:#6fc6b5;
+    --accent3:#ffd86b;
+    --soft:#f6f2ec;
+    --shadow:0 10px 28px rgba(35,48,68,.10);
+    --radius:24px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: "Pretendard","Noto Sans KR",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    min-height:100vh;
+  }
+  button, select, input{font:inherit}
+  button{touch-action:manipulation}
+  .app{
+    max-width:1100px;
+    margin:0 auto;
+    padding:18px;
+    min-height:100vh;
+  }
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:18px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .brand-die{
+    width:56px;height:56px;border-radius:18px;
+    display:grid;place-items:center;
+    background:var(--accent3);
+    box-shadow:var(--shadow);
+    font-size:34px;
+  }
+  .title-wrap h1{
+    margin:0;
+    font-size:clamp(28px,5vw,48px);
+    line-height:1;
+    letter-spacing:-.04em;
+  }
+  .credit{
+    margin-top:6px;
+    font-size:14px;
+    color:var(--muted);
+  }
+  .top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .icon-btn,.btn{
+    border:0;
+    border-radius:18px;
+    padding:12px 16px;
+    background:#fff;
+    color:var(--ink);
+    box-shadow:0 5px 16px rgba(35,48,68,.08);
+    font-weight:800;
+    cursor:pointer;
+  }
+  .icon-btn:active,.btn:active,.mode-card:active{transform:translateY(1px)}
+  .hero{
+    background:linear-gradient(135deg,#fff 0%,#fff5e7 100%);
+    border:1px solid var(--line);
+    border-radius:30px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+  }
+  .hero-kicker{
+    font-size:15px;
+    font-weight:900;
+    color:#d26b3d;
+    letter-spacing:.02em;
+    margin-bottom:8px;
+  }
+  .hero h2{
+    margin:0 0 8px;
+    font-size:clamp(26px,4vw,42px);
+    letter-spacing:-.035em;
+  }
+  .hero p{
+    margin:0;
+    color:var(--muted);
+    font-size:clamp(15px,2.2vw,19px);
+    line-height:1.6;
+  }
+  .mode-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+  }
+  .mode-card{
+    border:1px solid var(--line);
+    background:var(--card);
+    border-radius:var(--radius);
+    padding:22px 18px;
+    min-height:170px;
+    text-align:left;
+    cursor:pointer;
+    box-shadow:0 6px 18px rgba(35,48,68,.06);
+  }
+  .mode-card .emoji{font-size:38px;margin-bottom:12px;display:block}
+  .mode-card strong{font-size:22px;display:block;margin-bottom:6px}
+  .mode-card span{color:var(--muted);line-height:1.5;font-size:15px}
+  .mode-card.learn{border-top:7px solid var(--accent2)}
+  .mode-card.practice{border-top:7px solid var(--accent3)}
+  .mode-card.play{border-top:7px solid var(--accent)}
+  .mode-card.settings{border-top:7px solid #a8b7cf}
+  .screen{display:none}
+  .screen.active{display:block}
+  .panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:30px;
+    padding:22px;
+    box-shadow:var(--shadow);
+  }
+  .screen-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+  }
+  .screen-head h2{margin:0;font-size:28px;letter-spacing:-.03em}
+  .back{
+    border:0;background:var(--soft);border-radius:16px;padding:11px 14px;font-weight:900;cursor:pointer;
+  }
+  .lesson-grid,.game-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+  }
+  .small-card{
+    background:var(--soft);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:18px;
+    cursor:pointer;
+    min-height:130px;
+  }
+  .small-card strong{display:block;font-size:19px;margin-bottom:8px}
+  .small-card p{margin:0;color:var(--muted);line-height:1.5;font-size:14px}
+  .stage{
+    min-height:430px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    gap:18px;
+  }
+  .prompt{
+    font-size:clamp(27px,4vw,46px);
+    line-height:1.25;
+    font-weight:950;
+    letter-spacing:-.04em;
+    max-width:880px;
+  }
+  .subprompt{
+    font-size:18px;
+    color:var(--muted);
+    min-height:26px;
+  }
+  .dice-row{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-items:center;
+    min-height:110px;
+  }
+  .die{
+    width:92px;height:92px;border-radius:22px;
+    background:#fff;
+    border:3px solid #26364e;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    grid-template-rows:repeat(3,1fr);
+    padding:12px;
+    box-shadow:0 7px 15px rgba(35,48,68,.10);
+  }
+  .pip{width:15px;height:15px;border-radius:50%;background:#26364e;align-self:center;justify-self:center}
+  .hidden-die{
+    width:92px;height:92px;border-radius:22px;
+    background:#2f3f57;color:#fff;display:grid;place-items:center;
+    font-size:44px;font-weight:900;
+  }
+  .answer-box{
+    min-height:58px;
+    display:grid;
+    place-items:center;
+    font-size:28px;
+    font-weight:950;
+    color:#1b725f;
+  }
+  .stage-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+  .primary{background:var(--accent);color:#402416}
+  .secondary{background:var(--accent2);color:#173e36}
+  .yellow{background:var(--accent3);color:#4b3a00}
+  .ghost{background:var(--soft)}
+  .btn.big{padding:15px 22px;font-size:18px;border-radius:20px}
+  .support{
+    width:min(900px,100%);
+    background:#f2fbf8;
+    border:2px dashed #9fd8cc;
+    border-radius:20px;
+    padding:16px 18px;
+    text-align:left;
+  }
+  .support b{display:block;margin-bottom:6px;color:#1f6a5d}
+  .progress{
+    width:min(900px,100%);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    font-size:14px;
+    color:var(--muted);
+  }
+  .bar{
+    flex:1;height:9px;border-radius:99px;background:#ece7df;overflow:hidden;
+  }
+  .bar > div{height:100%;background:var(--accent2);width:0%}
+  .settings-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
+  }
+  .setting{
+    background:var(--soft);border:1px solid var(--line);border-radius:20px;padding:16px;
+  }
+  .setting label{display:block;font-weight:900;margin-bottom:9px}
+  .setting small{display:block;color:var(--muted);margin-top:7px;line-height:1.45}
+  .seg{
+    display:flex;gap:7px;flex-wrap:wrap;
+  }
+  .seg button{
+    border:1px solid #d9d4cd;background:#fff;border-radius:14px;padding:9px 12px;font-weight:800;cursor:pointer;
+  }
+  .seg button.active{background:#26364e;color:#fff;border-color:#26364e}
+  .toggle{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+  }
+  .toggle input{width:24px;height:24px}
+  .footer-note{
+    margin-top:18px;text-align:center;color:var(--muted);font-size:13px;
+  }
+  .jumbo-wrap{
+    display:flex;flex-direction:column;align-items:center;gap:14px;padding:20px 0;
+  }
+  .jumbo{
+    width:170px;height:170px;border-radius:36px;
+    background:#fff;border:5px solid #26364e;
+    display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);
+    padding:24px;
+    box-shadow:var(--shadow);
+  }
+  .jumbo .pip{width:26px;height:26px}
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:99px;
+    background:#fff0e8;color:#a64f2b;font-weight:900;font-size:13px;
+  }
+  .practice-controls{
+    width:min(900px,100%);
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:center;
+    gap:10px 14px;
+    padding:12px 14px;
+    background:var(--soft);
+    border:1px solid var(--line);
+    border-radius:18px;
+  }
+  .practice-controls .control-label{
+    font-weight:900;
+    font-size:15px;
+    white-space:nowrap;
+  }
+  .practice-controls .seg{
+    justify-content:center;
+  }
+
+  .learn-controls{
+    width:min(900px,100%);
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:center;
+    gap:10px 14px;
+    padding:12px 14px;
+    background:#fff8e8;
+    border:1px solid #ead9aa;
+    border-radius:18px;
+  }
+  .learn-controls .control-label{
+    font-weight:900;
+    font-size:15px;
+    white-space:nowrap;
+  }
+  .learn-controls .seg{justify-content:center}
+  .die.correct{
+    border:5px solid #ef8b4d;
+    background:#fff3df;
+    transform:scale(1.08);
+    box-shadow:0 0 0 7px rgba(239,139,77,.17),0 10px 22px rgba(35,48,68,.14);
+  }
+  .answer-visual{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+    padding:8px 0;
+  }
+  .math-line{
+    font-size:clamp(28px,5vw,46px);
+    font-weight:950;
+    color:#26364e;
+    letter-spacing:.04em;
+  }
+  .number-target{
+    min-width:100px;
+    min-height:100px;
+    padding:12px 20px;
+    border-radius:24px;
+    display:grid;
+    place-items:center;
+    background:#fff;
+    border:4px solid #26364e;
+    font-size:54px;
+    font-weight:950;
+    box-shadow:0 7px 15px rgba(35,48,68,.10);
+  }
+  .relation-label{
+    display:inline-block;
+    padding:7px 12px;
+    border-radius:999px;
+    background:#f2fbf8;
+    color:#1f6a5d;
+    font-weight:900;
+  }
+
+  .skill-tag{
+    width:min(900px,100%);
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    align-items:center;
+    justify-content:center;
+    color:var(--muted);
+    font-size:13px;
+  }
+  .skill-tag b{
+    color:#48566b;
+    background:#eef1f5;
+    border-radius:999px;
+    padding:6px 10px;
+  }
+  .sequence-row{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+  }
+
+  .compare-board{
+    width:min(760px,100%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    flex-wrap:nowrap;
+  }
+  .relation-slot{
+    width:92px;
+    height:92px;
+    border:3px dashed #9aa7b8;
+    border-radius:22px;
+    background:#f7f8fa;
+    display:grid;
+    place-items:center;
+    font-size:54px;
+    font-weight:950;
+    color:#26364e;
+  }
+  .relation-slot.ready{
+    border-style:solid;
+    border-color:#6fc6b5;
+    background:#f0fbf8;
+  }
+  .symbol-tray{
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .symbol-chip{
+    min-width:78px;
+    min-height:62px;
+    border:2px solid #ccd3dd;
+    border-radius:18px;
+    background:#fff;
+    font-size:38px;
+    font-weight:950;
+    color:#26364e;
+    cursor:grab;
+  }
+  .symbol-chip.selected{
+    border-color:#ef8b4d;
+    background:#fff3df;
+    box-shadow:0 0 0 5px rgba(239,139,77,.15);
+  }
+  .feedback{
+    min-height:34px;
+    font-size:20px;
+    font-weight:900;
+    color:#4c5b70;
+  }
+  @media(max-width:520px){
+    .compare-board{gap:8px}
+    .relation-slot{width:70px;height:70px;font-size:44px;border-radius:18px}
+    .symbol-chip{min-width:68px;min-height:56px;font-size:32px}
+  }
+  .number-box{
+    min-width:66px;
+    min-height:66px;
+    padding:8px;
+    border:3px solid #26364e;
+    border-radius:18px;
+    background:#fff;
+    display:grid;
+    place-items:center;
+    font-size:34px;
+    font-weight:950;
+  }
+  .number-box.blank{
+    border-style:dashed;
+    color:#7d8796;
+    background:#faf8f4;
+  }
+
+  .die.mini{
+    width:66px;
+    height:66px;
+    border-radius:17px;
+    padding:8px;
+    border-width:3px;
+  }
+  .die.mini .pip{
+    width:10px;
+    height:10px;
+  }
+  .spatial-wrap{
+    width:min(760px,100%);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:10px 0;
+  }
+  .spatial-horizontal{
+    display:flex;
+    flex-wrap:nowrap;
+    gap:10px;
+    align-items:center;
+    justify-content:center;
+  }
+  .spatial-vertical{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    align-items:center;
+  }
+  .spatial-grid{
+    display:grid;
+    gap:10px;
+    align-items:center;
+    justify-items:center;
+  }
+  .spatial-mode-controls{
+    width:min(900px,100%);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
+    padding:10px;
+    border-radius:16px;
+    background:#f7f8fa;
+    border:1px solid var(--line);
+  }
+  .spatial-mode-controls button{
+    border:1px solid #d9d4cd;
+    background:#fff;
+    border-radius:14px;
+    padding:9px 12px;
+    font-weight:850;
+    cursor:pointer;
+  }
+  .spatial-mode-controls button.active{
+    background:#26364e;
+    color:#fff;
+    border-color:#26364e;
+  }
+  .spatial-mode-controls button:disabled{
+    opacity:.42;
+    cursor:not-allowed;
+  }
+
+  .order-board{
+    width:min(900px,100%);
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    align-items:center;
+  }
+  .order-source-row,.order-target-row{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+  }
+  .order-source{
+    border:0;
+    background:transparent;
+    padding:2px;
+    border-radius:16px;
+    cursor:grab;
+  }
+  .order-source:focus-visible{
+    outline:4px solid rgba(111,198,181,.35);
+  }
+  .order-slot{
+    width:72px;
+    height:72px;
+    border:3px dashed #a7b1bf;
+    border-radius:18px;
+    background:#f8f9fb;
+    display:grid;
+    place-items:center;
+  }
+  .order-slot.filled{
+    border-style:solid;
+    border-color:#6fc6b5;
+    background:#f0fbf8;
+  }
+  .order-slot .die.mini{cursor:grab}
+  .order-feedback{
+    min-height:32px;
+    font-weight:900;
+    color:#4c5b70;
+    text-align:center;
+  }
+  .merge-note{
+    font-size:14px;
+    color:var(--muted);
+    text-align:center;
+  }
+
+  .irregular-die{
+    position:relative;
+    width:190px;
+    height:190px;
+    border:5px solid #26364e;
+    border-radius:34px;
+    background:#fff;
+    box-shadow:0 8px 18px rgba(35,48,68,.10);
+  }
+  .irregular-pip{
+    position:absolute;
+    border-radius:50%;
+    background:#26364e;
+    transform:translate(-50%,-50%);
+  }
+
+  .multiply-live{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .factor-card{
+    min-width:150px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+  }
+  .factor-label{
+    font-size:14px;
+    font-weight:900;
+    color:var(--muted);
+  }
+  .times-symbol{
+    font-size:48px;
+    font-weight:950;
+    color:#26364e;
+  }
+  .die.high-die{
+    border-color:#b77b1d;
+    background:#fff9e8;
+  }
+
+  @media(max-width:520px){
+    .die.mini{
+      width:54px;height:54px;border-radius:14px;padding:6px;
+    }
+    .die.mini .pip{width:8px;height:8px}
+    .spatial-horizontal{gap:6px}
+    .spatial-grid{gap:7px}
+    .order-slot{width:58px;height:58px;border-radius:15px}
+    .irregular-die{width:165px;height:165px}
+    .factor-card{min-width:120px}
+    .times-symbol{font-size:40px}
+  }
+
+  @media(max-width:820px){
+    .mode-grid{grid-template-columns:repeat(2,1fr)}
+    .lesson-grid,.game-grid{grid-template-columns:repeat(2,1fr)}
+    .settings-grid{grid-template-columns:1fr}
+  }
+  @media(max-width:520px){
+    .app{padding:12px}
+    header{align-items:flex-start}
+    .brand-die{width:48px;height:48px;font-size:30px}
+    .top-actions .icon-btn span{display:none}
+    .mode-grid,.lesson-grid,.game-grid{grid-template-columns:1fr 1fr}
+    .mode-card{min-height:145px;padding:18px 14px}
+    .mode-card strong{font-size:19px}
+    .die,.hidden-die{width:72px;height:72px;border-radius:18px}
+    .die{padding:9px}
+    .pip{width:12px;height:12px}
+    .prompt{font-size:30px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="brand-die">🎲</div>
+      <div class="title-wrap">
+        <h1>굴려봐! 수학</h1>
+        <div class="credit">제작 · 수다쟁이 여니쌤</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" onclick="openJumbo()">🎲 <span>큰 주사위</span></button>
+      <button class="icon-btn" onclick="showScreen('settings')">⚙️ <span>교사 설정</span></button>
+    </div>
+  </header>
+
+  <main id="home" class="screen active">
+    <section class="hero">
+      <div class="hero-kicker">보고 · 생각하고 · 만들고 · 도전해요!</div>
+      <h2>같은 수학, 다른 난이도.<br>모두 함께 주사위로 놀아요.</h2>
+      <p>기초수학 개념 학습부터 반복 연습, 학급 전체 게임까지 한 화면에서 간단하게 사용할 수 있어요.</p>
+    </section>
+    <section class="mode-grid">
+      <button class="mode-card learn" onclick="showScreen('learn')">
+        <span class="emoji">🌱</span><strong>배워요</strong><span>수 읽기, 홀짝, 수 만들기, 덧셈·곱셈 개념</span>
+      </button>
+      <button class="mode-card practice" onclick="showScreen('practice')">
+        <span class="emoji">👀</span><strong>연습해요</strong><span>보고 말하기, 숫자 보고 놓기, 기억하기, 합 구하기</span>
+      </button>
+      <button class="mode-card play" onclick="showScreen('play')">
+        <span class="emoji">🔥</span><strong>놀아요</strong><span>속도전, 목표수, 생존전, 가까이 만들기</span>
+      </button>
+      <button class="mode-card settings" onclick="showScreen('settings')">
+        <span class="emoji">⚙️</span><strong>선생님 설정</strong><span>주사위 수, 수 범위, 문제 수, 쉬운 미션을 조절해요</span>
+      </button>
+    </section>
+    <div class="footer-note">굴려봐! 수학 · 제작 수다쟁이 여니쌤</div>
+  </main>
+
+  <section id="learn" class="screen">
+    <div class="panel">
+      <div class="screen-head">
+        <h2>🌱 배워요</h2><button class="back" onclick="showScreen('home')">← 처음으로</button>
+      </div>
+      <div id="learnMenu" class="lesson-grid">
+        <button class="small-card" onclick="startLearn('read')"><strong>🎲 주사위 수 읽기</strong><p>주사위 1개부터 6개까지 점차 늘려 수를 읽어요.</p></button>
+        <button class="small-card" onclick="startLearn('irregularRead')"><strong>✨ 비정형 점 읽기</strong><p>점의 크기와 위치가 달라도 1~9까지 수량을 빠르게 알아봐요.</p></button>
+        <button class="small-card" onclick="startLearn('same')"><strong>👯 같은 수 놓기</strong><p>제시된 주사위를 보고 같은 수로 주사위를 놓아요.</p></button>
+        <button class="small-card" onclick="startLearn('order')"><strong>📶 순서대로 놓기</strong><p>같은 수는 한 번만 두고, 드래그하여 작은 수부터 배열해요.</p></button>
+        <button class="small-card" onclick="startLearn('compare')"><strong>⚖️ 크기 비교</strong><p>두 주사위 사이에 &lt; &gt; = 기호를 놓아 수의 크기를 비교해요.</p></button>
+        <button class="small-card" onclick="startLearn('relation')"><strong>🔎 크고·작고·같게</strong><p>제시된 수보다 큰 수·작은 수, 또는 같은 수를 주사위로 만들어요.</p></button>
+        <button class="small-card" onclick="startLearn('make')"><strong>🧩 수 만들기</strong><p>한 수를 여러 주사위로 나누어 만들어요.</p></button>
+        <button class="small-card" onclick="startLearn('evenodd')"><strong>⚪ 홀수·짝수</strong><p>여러 주사위를 홀수와 짝수로 구별해요.</p></button>
+        <button class="small-card" onclick="startLearn('add')"><strong>➕ 덧셈</strong><p>주사위 수를 늘려가며 합을 구해요.</p></button>
+        <button class="small-card" onclick="startLearn('multiply')"><strong>✖️ 곱셈 개념</strong><p>같은 수가 여러 번 모이는 모습을 주사위로 봐요.</p></button>
+        <button class="small-card" onclick="startLearn('multiplyRoll')"><strong>🎲 곱셈 실전</strong><p>1~6 주사위와 5~9 주사위를 굴려 나온 두 수를 곱해요.</p></button>
+        <button class="small-card" onclick="startLearn('groupcount')"><strong>🟦 묶어 세기</strong><p>같은 수가 반복될 때 2씩·5씩 묶어 세어 봐요.</p></button>
+        <button class="small-card" onclick="startLearn('make10')"><strong>🔟 10 만들기</strong><p>10이 되려면 얼마가 더 필요한지 주사위로 찾아요.</p></button>
+        <button class="small-card" onclick="startLearn('beforeafter')"><strong>↔️ 앞수·뒤수</strong><p>제시된 수의 바로 앞수와 뒤수를 찾아요.</p></button>
+        <button class="small-card" onclick="startLearn('missing')"><strong>❓ 빠진 수</strong><p>1~6의 순서에서 빠진 수를 찾아요.</p></button>
+        <button class="small-card" onclick="startLearn('mathwords')"><strong>💬 수학말 알아보기</strong><p>모두·남은·더 많은·더 적은 뜻을 주사위로 익혀요.</p></button>
+        <button class="small-card" onclick="startLearn('spatial')"><strong>🧭 위치와 순서</strong><p>3개부터 시작해 가로·세로·두 줄 배열에서 위치를 찾아요.</p></button>
+      </div>
+      <div id="learnStage" class="stage" style="display:none"></div>
+    </div>
+  </section>
+
+  <section id="practice" class="screen">
+    <div class="panel">
+      <div class="screen-head">
+        <h2>👀 연습해요</h2><button class="back" onclick="showScreen('home')">← 처음으로</button>
+      </div>
+      <div id="practiceMenu" class="lesson-grid">
+        <button class="small-card" onclick="startPractice('diceToNumber')"><strong>🎲 주사위 수 읽기</strong><p>주사위 1~6개를 골라 보고, 수를 빠르게 읽어요.</p></button>
+        <button class="small-card" onclick="startPractice('numberToDice')"><strong>🔢 숫자를 만들어요</strong><p>숫자를 보고 실제 주사위로 표현해요.</p></button>
+        <button class="small-card" onclick="startPractice('evenodd')"><strong>⚪ 홀수·짝수 연습</strong><p>주사위 수를 구별하고, 합이 홀수인지 짝수인지 생각해요.</p></button>
+        <button class="small-card" onclick="startPractice('memory')"><strong>🧠 기억해요</strong><p>잠깐 보고 가린 뒤 그대로 놓아봐요.</p></button>
+        <button class="small-card" onclick="startPractice('sum')"><strong>➕ 모두 더해요</strong><p>여러 주사위의 합을 구해요.</p></button>
+      </div>
+      <div id="practiceStage" class="stage" style="display:none"></div>
+    </div>
+  </section>
+
+  <section id="play" class="screen">
+    <div class="panel">
+      <div class="screen-head">
+        <h2>🔥 놀아요</h2><button class="back" onclick="showScreen('home')">← 처음으로</button>
+      </div>
+      <div id="playMenu" class="game-grid">
+        <button class="small-card" onclick="startGame('target')"><strong>🎯 목표수 만들기</strong><p>정해진 수가 되도록 주사위를 놓아요.</p></button>
+        <button class="small-card" onclick="startGame('race')"><strong>⚡ 조건 미션</strong><p>홀수·짝수·합 조건을 보고 빠르게 해결해요.</p></button>
+        <button class="small-card" onclick="startGame('survival')"><strong>🛟 끝까지 살아남기</strong><p>짝수 OUT, 홀수 생존! 규칙을 바꿔도 돼요.</p></button>
+        <button class="small-card" onclick="startGame('closest')"><strong>📍 가장 가까이</strong><p>목표수에 가장 가까운 합을 만든 사람이 승리해요.</p></button>
+        <button class="small-card" onclick="openJumbo()"><strong>🎲 큰 주사위</strong><p>화면에서 큰 주사위를 굴려 게임 변수를 만들어요.</p></button>
+      </div>
+      <div id="playStage" class="stage" style="display:none"></div>
+    </div>
+  </section>
+
+  <section id="settings" class="screen">
+    <div class="panel">
+      <div class="screen-head">
+        <h2>⚙️ 선생님 설정</h2><button class="back" onclick="showScreen('home')">← 처음으로</button>
+      </div>
+      <div class="settings-grid">
+        <div class="setting">
+          <label>주사위 개수</label>
+          <div class="seg" id="diceCountSeg"></div>
+          <small>1개부터 6개까지. 많아질수록 처리해야 할 정보가 늘어나요.</small>
+        </div>
+        <div class="setting">
+          <label>수 범위</label>
+          <div class="seg" id="rangeSeg"></div>
+          <small>9·20·50까지의 수 활동은 목표수·합 활동에서 사용해요.</small>
+        </div>
+        <div class="setting">
+          <label>연산</label>
+          <div class="seg" id="operationSeg"></div>
+          <small>연습·게임 문항 생성에 반영돼요.</small>
+        </div>
+        <div class="setting">
+          <label>도전 문항 수</label>
+          <div class="seg" id="questionSeg"></div>
+          <small>한 번에 너무 길지 않게 5~20문제로 설정할 수 있어요.</small>
+        </div>
+        <div class="setting">
+          <label>화면 가리기</label>
+          <div class="seg" id="hideSeg"></div>
+          <small>기억하기 모드에서 잠깐 보여준 뒤 주사위를 가려요.</small>
+        </div>
+        <div class="setting toggle">
+          <div>
+            <label style="margin:0">🌱 한 걸음 미션 함께 보기</label>
+            <small>학급 전체 문제 아래에 같은 개념의 더 쉬운 문제를 함께 보여줘요.</small>
+          </div>
+          <input id="supportToggle" type="checkbox" onchange="settings.support=this.checked;saveSettings()" />
+        </div>
+        <div class="setting toggle">
+          <div>
+            <label style="margin:0">🧩 교사용 학습요소 표시</label>
+            <small>학생 화면은 그대로 두고, 교사가 볼 수 있도록 관련 핵심 기능을 작게 표시해요.</small>
+          </div>
+          <input id="skillTagToggle" type="checkbox" onchange="settings.showSkillTag=this.checked;saveSettings()" />
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap">
+        <button class="btn big secondary" onclick="saveSettings();showScreen('home')">설정 저장하고 시작</button>
+        <button class="btn big ghost" onclick="resetSettings()">기본값으로</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="jumbo" class="screen">
+    <div class="panel">
+      <div class="screen-head">
+        <h2>🎲 큰 주사위</h2><button class="back" onclick="showScreen(prevScreen || 'home')">← 돌아가기</button>
+      </div>
+      <div class="jumbo-wrap">
+        <span class="badge">게임 시작 · 동점 결정 · 숫자 선택에 사용해요</span>
+        <div id="jumboDie" class="jumbo"></div>
+        <div id="jumboNumber" style="font-size:42px;font-weight:950">1</div>
+        <button class="btn big primary" onclick="rollJumbo()">굴리기!</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const defaultSettings = {
+  diceCount:2, range:9, operation:'add', questions:10, hideSeconds:3, support:true,
+  showSkillTag:false
+};
+let settings = {...defaultSettings, ...(JSON.parse(localStorage.getItem('rollMathSettings')||'{}'))};
+let currentScreen='home', prevScreen='home', qIndex=0, currentDice=[], currentMode='', hideTimer=null;
+let practiceDiceCount=settings.diceCount;
+let practiceReadType='read';
+let parityDiceCount=settings.diceCount;
+let parityMode='identify';
+let learnDiceCount=settings.diceCount;
+let comparePair=[1,1];
+let selectedCompareSymbol='';
+let spatialLayout='horizontal';
+let orderValues=[];
+let orderUnique=[];
+let orderSlots=[];
+
+function saveSettings(){
+  localStorage.setItem('rollMathSettings', JSON.stringify(settings));
+  renderSettings();
+}
+function resetSettings(){
+  settings={...defaultSettings};
+  saveSettings();
+}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id!=='jumbo') currentScreen=id;
+  if(id==='learn'){showMenu('learn')}
+  if(id==='practice'){showMenu('practice')}
+  if(id==='play'){showMenu('play')}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function showMenu(type){
+  document.getElementById(type+'Menu').style.display='grid';
+  document.getElementById(type+'Stage').style.display='none';
+}
+function openJumbo(){
+  prevScreen=currentScreen;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('jumbo').classList.add('active');
+  renderJumbo(1);
+}
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+function dice(n=settings.diceCount){return Array.from({length:n},()=>rand(1,6))}
+function sum(arr){return arr.reduce((a,b)=>a+b,0)}
+function setStage(type,html){
+  document.getElementById(type+'Menu').style.display='none';
+  const el=document.getElementById(type+'Stage');
+  el.style.display='flex';
+  el.innerHTML=html;
+}
+function progressHtml(){
+  const p=Math.min(100,((qIndex+1)/settings.questions)*100);
+  return `<div class="progress"><span>${qIndex+1} / ${settings.questions}</span><div class="bar"><div style="width:${p}%"></div></div></div>`;
+}
+function diceHtml(values,hidden=false,jumbo=false){
+  if(hidden) return `<div class="dice-row">${values.map(()=>`<div class="hidden-die">?</div>`).join('')}</div>`;
+  return `<div class="dice-row">${values.map(v=>dieHtml(v,jumbo)).join('')}</div>`;
+}
+function dieHtml(v,jumbo=false,extraClass=''){
+  const positions = {
+    1:[5],
+    2:[1,9],
+    3:[1,5,9],
+    4:[1,3,7,9],
+    5:[1,3,5,7,9],
+    6:[1,3,4,6,7,9],
+    7:[1,3,4,5,6,7,9],
+    8:[1,2,3,4,6,7,8,9],
+    9:[1,2,3,4,5,6,7,8,9]
+  };
+  const safe=Math.max(1,Math.min(9,Number(v)||1));
+  let cells='';
+  for(let i=1;i<=9;i++) cells += positions[safe].includes(i)?'<span class="pip"></span>':'<span></span>';
+  const base=jumbo?'jumbo':'die';
+  return `<div class="${base}${extraClass?' '+extraClass:''}">${cells}</div>`;
+}
+function highlightedDiceHtml(values,highlightIndices=[]){
+  return `<div class="dice-row">${values.map((v,i)=>dieHtml(v,false,highlightIndices.includes(i)?'correct':'')).join('')}</div>`;
+}
+function supportBox(text){
+  return settings.support ? `<div class="support"><b>🌱 한 걸음 미션</b>${text}</div>` : '';
+}
+
+function skillTagHtml(area,sub){
+  return settings.showSkillTag
+    ? `<div class="skill-tag"><span>교사용 학습요소</span><b>${area}</b><span>›</span><b>${sub}</b></div>`
+    : '';
+}
+function doneOrNext(fn){
+  if(qIndex+1>=settings.questions){
+    return `<button class="btn big secondary" onclick="qIndex=0;${fn}">처음부터 다시</button>
+            <button class="btn big ghost" onclick="showScreen('home')">처음 화면</button>`;
+  }
+  return `<button class="btn big primary" onclick="qIndex++;${fn}">다음 문제</button>`;
+}
+
+/* LEARN */
+function startLearn(mode){
+  currentMode=mode;
+  qIndex=0;
+  selectedCompareSymbol='';
+  if(mode==='spatial'){
+    learnDiceCount=Math.max(3,learnDiceCount);
+    spatialLayout='horizontal';
+  }
+  renderLearn();
+}
+function setLearnDiceCount(n){
+  let next=Math.max(1,Math.min(6,Number(n)||1));
+  if(currentMode==='spatial') next=Math.max(3,next);
+  learnDiceCount=next;
+  qIndex=0;
+  if(currentMode==='spatial' && spatialLayout==='twoRows' && learnDiceCount<4) spatialLayout='horizontal';
+  renderLearn();
+}
+function learnDiceSelectorHtml(){
+  const choices=currentMode==='spatial'?[3,4,5,6]:[1,2,3,4,5,6];
+  const note=currentMode==='spatial'
+    ? '위치와 순서 활동은 주사위 3개부터 시작해요.'
+    : '1개부터 시작해 점차 늘려 보세요.';
+  return `<div class="learn-controls">
+    <span class="control-label">🎲 배울 주사위 수</span>
+    <div class="seg">
+      ${choices.map(n=>`<button class="${learnDiceCount===n?'active':''}" onclick="setLearnDiceCount(${n})">${n}개</button>`).join('')}
+    </div>
+    <span style="color:var(--muted);font-size:13px">${note}</span>
+  </div>`;
+}
+function setSpatialLayout(layout){
+  if(!['horizontal','vertical','twoRows'].includes(layout)) layout='horizontal';
+  if(layout==='twoRows' && learnDiceCount<4) return;
+  spatialLayout=layout;
+  renderLearn();
+}
+function spatialControlsHtml(){
+  return `<div class="spatial-mode-controls">
+    <b>배열 모양</b>
+    <button class="${spatialLayout==='horizontal'?'active':''}" onclick="setSpatialLayout('horizontal')">가로 한 줄</button>
+    <button class="${spatialLayout==='vertical'?'active':''}" onclick="setSpatialLayout('vertical')">세로 한 줄</button>
+    <button class="${spatialLayout==='twoRows'?'active':''}" onclick="setSpatialLayout('twoRows')" ${learnDiceCount<4?'disabled':''}>두 줄</button>
+  </div>`;
+}
+function uniqueDice(n){
+  const pool=[1,2,3,4,5,6];
+  for(let i=pool.length-1;i>0;i--){
+    const j=rand(0,i);
+    [pool[i],pool[j]]=[pool[j],pool[i]];
+  }
+  return pool.slice(0,Math.max(1,Math.min(6,n)));
+}
+function relationSample(target,relation,count){
+  const arr=[];
+  for(let i=0;i<count;i++){
+    if(relation==='gt') arr.push(rand(target+1,6));
+    else if(relation==='lt') arr.push(rand(1,target-1));
+    else arr.push(target);
+  }
+  return arr;
+}
+function relationSymbol(relation){
+  return relation==='gt'?'<':relation==='lt'?'>':'=';
+}
+
+function correctRelation(a,b){
+  if(a<b) return '<';
+  if(a>b) return '>';
+  return '=';
+}
+function chooseCompareSymbol(symbol){
+  selectedCompareSymbol=symbol;
+  const slot=document.getElementById('relationSlot');
+  if(slot){
+    slot.textContent=symbol;
+    slot.classList.add('ready');
+  }
+  document.querySelectorAll('.symbol-chip').forEach(btn=>{
+    btn.classList.toggle('selected',btn.dataset.symbol===symbol);
+  });
+  const feedback=document.getElementById('compareFeedback');
+  if(feedback) feedback.textContent='';
+}
+function checkCompareAnswer(){
+  const feedback=document.getElementById('compareFeedback');
+  if(!feedback) return;
+  if(!selectedCompareSymbol){
+    feedback.textContent='먼저 <, >, = 중 하나를 가운데 놓아 보세요.';
+    return;
+  }
+  const left=comparePair[0], right=comparePair[1];
+  const correct=correctRelation(left,right);
+  if(selectedCompareSymbol===correct){
+    feedback.innerHTML=`맞았어요! <b>${left} ${correct} ${right}</b>`;
+    const d1=document.getElementById('compareDieLeft');
+    const d2=document.getElementById('compareDieRight');
+    if(d1 && d2){
+      if(left>right) d1.classList.add('correct');
+      else if(right>left) d2.classList.add('correct');
+      else {d1.classList.add('correct'); d2.classList.add('correct');}
+    }
+  }else{
+    feedback.textContent='다시 생각해 보세요. 두 주사위의 점 수를 천천히 비교해 보세요.';
+  }
+}
+function allowCompareDrop(ev){ ev.preventDefault(); }
+function dropCompareSymbol(ev){
+  ev.preventDefault();
+  const symbol=ev.dataTransfer ? ev.dataTransfer.getData('text/plain') : '';
+  if(symbol) chooseCompareSymbol(symbol);
+}
+function beginCompareDrag(ev,symbol){
+  if(ev.dataTransfer) ev.dataTransfer.setData('text/plain',symbol);
+}
+
+function irregularDieHtml(value){
+  const anchors=[
+    [18,18],[50,16],[82,20],
+    [17,50],[50,50],[83,48],
+    [20,82],[50,84],[80,80]
+  ];
+  const shuffled=[...anchors].sort(()=>Math.random()-.5).slice(0,value);
+  const pips=shuffled.map(([x,y],i)=>{
+    const jx=Math.max(10,Math.min(90,x+rand(-7,7)));
+    const jy=Math.max(10,Math.min(90,y+rand(-7,7)));
+    const size=rand(12,27);
+    return `<span class="irregular-pip" style="left:${jx}%;top:${jy}%;width:${size}px;height:${size}px"></span>`;
+  }).join('');
+  return `<div class="irregular-die" aria-label="비정형 점 ${value}개">${pips}</div>`;
+}
+
+function prepareOrderProblem(values){
+  orderValues=[...values];
+  orderUnique=[...new Set(values)].sort((a,b)=>a-b);
+  orderSlots=Array(orderUnique.length).fill(null);
+}
+function orderBoardHtml(){
+  const sources=orderValues.map((v,i)=>`
+    <button type="button" class="order-source" draggable="true"
+      aria-label="주사위 ${v}"
+      ondragstart="beginOrderSourceDrag(event,${v},${i})"
+      onclick="tapOrderSource(${v})">${dieHtml(v,false,'mini')}</button>`).join('');
+  return `<div class="order-board">
+    <div>
+      <div class="relation-label">문제 주사위</div>
+      <div class="order-source-row">${sources}</div>
+    </div>
+    <div class="merge-note">같은 수가 여러 번 나오면 한 번만 놓아요. 드래그하거나 눌러서 아래 칸에 놓으세요.</div>
+    <div>
+      <div class="relation-label">작은 수 → 큰 수</div>
+      <div id="orderTargetRow" class="order-target-row"></div>
+    </div>
+    <div id="orderFeedback" class="order-feedback"></div>
+  </div>`;
+}
+function renderOrderSlots(){
+  const row=document.getElementById('orderTargetRow');
+  if(!row) return;
+  row.innerHTML=orderSlots.map((v,i)=>{
+    const inside=v===null?'':`<div draggable="true" ondragstart="beginOrderPlacedDrag(event,${i})">${dieHtml(v,false,'mini')}</div>`;
+    return `<div class="order-slot ${v===null?'':'filled'}"
+      ondragover="event.preventDefault()"
+      ondrop="dropOrderItem(event,${i})"
+      onclick="${v===null?'':'removeOrderAt('+i+')'}"
+      aria-label="${v===null?'빈 순서 칸':v+'가 놓인 칸'}">${inside}</div>`;
+  }).join('');
+}
+function beginOrderSourceDrag(ev,value,index){
+  if(ev.dataTransfer) ev.dataTransfer.setData('text/plain',JSON.stringify({type:'source',value,index}));
+}
+function beginOrderPlacedDrag(ev,fromIndex){
+  if(ev.dataTransfer) ev.dataTransfer.setData('text/plain',JSON.stringify({type:'placed',fromIndex}));
+}
+function tapOrderSource(value){
+  placeOrderValue(value,null);
+}
+function placeOrderValue(value,slotIndex){
+  value=Number(value);
+  const feedback=document.getElementById('orderFeedback');
+  if(orderSlots.includes(value)){
+    if(feedback) feedback.textContent=`${value}은(는) 이미 놓았어요. 같은 수는 한 번만 놓아요.`;
+    return;
+  }
+  let idx=slotIndex;
+  if(idx===null || idx===undefined) idx=orderSlots.findIndex(v=>v===null);
+  if(idx<0){
+    if(feedback) feedback.textContent='빈 칸이 없어요. 놓인 주사위를 눌러 빼고 다시 해 보세요.';
+    return;
+  }
+  if(orderSlots[idx]!==null){
+    const empty=orderSlots.findIndex(v=>v===null);
+    if(empty>=0) orderSlots[empty]=orderSlots[idx];
+  }
+  orderSlots[idx]=value;
+  if(feedback) feedback.textContent='';
+  renderOrderSlots();
+}
+function dropOrderItem(ev,slotIndex){
+  ev.preventDefault();
+  if(!ev.dataTransfer) return;
+  let data;
+  try{ data=JSON.parse(ev.dataTransfer.getData('text/plain')||'{}'); }catch(e){ return; }
+  if(data.type==='source'){
+    placeOrderValue(data.value,slotIndex);
+  }else if(data.type==='placed'){
+    const from=Number(data.fromIndex);
+    if(!Number.isInteger(from) || from<0 || from>=orderSlots.length) return;
+    const tmp=orderSlots[slotIndex];
+    orderSlots[slotIndex]=orderSlots[from];
+    orderSlots[from]=tmp;
+    renderOrderSlots();
+  }
+}
+function removeOrderAt(i){
+  if(i<0 || i>=orderSlots.length) return;
+  orderSlots[i]=null;
+  const feedback=document.getElementById('orderFeedback');
+  if(feedback) feedback.textContent='주사위를 뺐어요. 다시 놓아 보세요.';
+  renderOrderSlots();
+}
+function resetOrderBoard(){
+  orderSlots=Array(orderUnique.length).fill(null);
+  renderOrderSlots();
+  const feedback=document.getElementById('orderFeedback');
+  if(feedback) feedback.textContent='';
+}
+function checkOrderAnswer(){
+  const feedback=document.getElementById('orderFeedback');
+  if(orderSlots.some(v=>v===null)){
+    if(feedback) feedback.textContent='빈 칸을 모두 채워 보세요.';
+    return;
+  }
+  const ok=orderSlots.every((v,i)=>v===orderUnique[i]);
+  if(ok){
+    if(feedback) feedback.innerHTML=`맞았어요! <b>${orderUnique.join(' < ')}</b>`;
+  }else{
+    if(feedback) feedback.textContent='순서를 다시 살펴보세요. 작은 수가 왼쪽에 와야 해요.';
+  }
+}
+function showOrderAnswer(){
+  orderSlots=[...orderUnique];
+  renderOrderSlots();
+  const feedback=document.getElementById('orderFeedback');
+  if(feedback) feedback.innerHTML=`정답은 <b>${orderUnique.join(' < ')}</b>예요. 같은 수는 한 번만 놓아요.`;
+}
+function makeSpatialVisual(values,layout){
+  if(layout==='vertical'){
+    return `<div class="spatial-wrap"><div class="spatial-vertical">${values.map(v=>dieHtml(v,false,'mini')).join('')}</div></div>`;
+  }
+  if(layout==='twoRows'){
+    const cols=Math.ceil(values.length/2);
+    return `<div class="spatial-wrap"><div class="spatial-grid" style="grid-template-columns:repeat(${cols},auto)">${values.map(v=>dieHtml(v,false,'mini')).join('')}</div></div>`;
+  }
+  return `<div class="spatial-wrap"><div class="spatial-horizontal">${values.map(v=>dieHtml(v,false,'mini')).join('')}</div></div>`;
+}
+function renderLearn(){
+  let values=[],prompt='',sub='',answer='',support='',visual='',extra='',skillArea='',skillSub='';
+  const count=learnDiceCount;
+  selectedCompareSymbol='';
+
+  if(currentMode==='read'){
+    skillArea='수감각·기초수개념'; skillSub='즉각적 수량 인식·세기';
+    values=dice(count);
+    prompt=count===1?'주사위에 점이 몇 개 보이나요?':'주사위를 왼쪽부터 차례대로 읽어 보세요.';
+    sub=count===1?'하나씩 세기 전에, 눈에 보이는 모양을 먼저 살펴봐요.':`${count}개의 주사위를 한 번에 보되, 왼쪽부터 천천히 읽어도 좋아요.`;
+    answer=`<div class="answer-visual">${diceHtml(values)}<div class="math-line">${values.join(' · ')}</div></div>`;
+    support=count===1?'손가락으로 점을 하나씩 짚어 세어도 좋아요.':'처음에는 하나씩 읽고, 익숙해지면 여러 주사위를 빠르게 읽어 보세요.';
+
+  }else if(currentMode==='irregularRead'){
+    skillArea='수감각·기초수개념'; skillSub='비정형 수량 인식·직산';
+    const irregularValue=rand(1,9);
+    prompt='점이 모두 몇 개일까요?';
+    sub='점의 크기와 위치가 달라도 전체 수량을 빠르게 살펴보세요.';
+    visual=irregularDieHtml(irregularValue);
+    answer=`<div class="answer-visual"><div class="number-target">${irregularValue}</div><div class="relation-label">점은 모두 ${irregularValue}개</div></div>`;
+    support='하나씩 세기 전에, 작은 묶음으로 나누어 한눈에 보이는 만큼부터 알아보세요.';
+
+  }else if(currentMode==='same'){
+    skillArea='시각·공간'; skillSub='수량-배열 대응';
+    values=dice(count);
+    prompt='제시된 주사위와 같은 수가 나오도록 놓아 보세요.';
+    sub=count===1?'화면의 주사위와 같은 수가 나오도록 실제 주사위를 놓아요.':`화면과 같은 순서로 주사위 ${count}개를 놓아 보세요.`;
+    answer=`<div class="answer-visual">${diceHtml(values)}<div class="relation-label">똑같이 놓으면 성공!</div></div>`;
+    support='먼저 점의 수를 말한 뒤 같은 수의 주사위를 찾아 놓아 보세요.';
+
+  }else if(currentMode==='order'){
+    skillArea='수감각·기초수개념'; skillSub='수의 순서·서열화';
+    const usedCount=Math.max(2,count);
+    let attempts=0;
+    do{
+      values=dice(usedCount);
+      attempts++;
+    }while(new Set(values).size<2 && attempts<12);
+    prepareOrderProblem(values);
+    prompt='같은 수는 한 번만 놓고, 작은 수부터 순서대로 놓아 보세요.';
+    sub='문제 주사위를 아래 칸으로 드래그하거나 눌러서 배열해요.';
+    visual=orderBoardHtml();
+    answer='';
+    support='같은 수가 여러 번 보여도 수의 순서에서는 한 번만 놓아요. 예: 2, 2, 5, 6 → 2, 5, 6';
+
+  }else if(currentMode==='compare'){
+    skillArea='수감각·기초수개념'; skillSub='수 크기 비교·대소 관계';
+    comparePair=[rand(1,6),rand(1,6)];
+    const a=comparePair[0], b=comparePair[1];
+    prompt='두 주사위 사이에 알맞은 기호를 놓아 보세요.';
+    sub='왼쪽 수와 오른쪽 수를 비교해 <, >, = 중 하나를 골라요.';
+    visual=`<div class="compare-board">
+      <div id="compareDieLeft">${dieHtml(a)}</div>
+      <div id="relationSlot" class="relation-slot" ondragover="allowCompareDrop(event)" ondrop="dropCompareSymbol(event)">?</div>
+      <div id="compareDieRight">${dieHtml(b)}</div>
+    </div>
+    <div class="symbol-tray" aria-label="비교 기호 선택">
+      <button type="button" class="symbol-chip" data-symbol="&lt;" draggable="true" ondragstart="beginCompareDrag(event,'&lt;')" onclick="chooseCompareSymbol('&lt;')">&lt;</button>
+      <button type="button" class="symbol-chip" data-symbol="=" draggable="true" ondragstart="beginCompareDrag(event,'=')" onclick="chooseCompareSymbol('=')">=</button>
+      <button type="button" class="symbol-chip" data-symbol="&gt;" draggable="true" ondragstart="beginCompareDrag(event,'&gt;')" onclick="chooseCompareSymbol('&gt;')">&gt;</button>
+    </div>
+    <div class="feedback" id="compareFeedback"></div>`;
+    answer='';
+    support='두 수가 같으면 =, 왼쪽 수가 작으면 <, 왼쪽 수가 크면 >를 놓아요.';
+
+  }else if(currentMode==='relation'){
+    skillArea='수감각·기초수개념'; skillSub='대소 관계·같음';
+    const relations=['gt','lt','eq'];
+    const relation=relations[rand(0,relations.length-1)];
+    let target;
+    if(relation==='gt') target=rand(1,5);
+    else if(relation==='lt') target=rand(2,6);
+    else target=rand(1,6);
+
+    const showAsNumber=Math.random()>.5;
+    const answers=relationSample(target,relation,count);
+
+    if(relation==='gt'){
+      prompt=`제시된 수보다 큰 수로 주사위 ${count}개를 놓아 보세요.`;
+      sub='제시된 수보다 큰 수를 골라 실제 주사위로 만들어 보세요.';
+      support='제시된 수와 주사위의 점 수를 비교해 보세요. 더 큰 수를 하나씩 찾아 놓으면 돼요.';
+    }else if(relation==='lt'){
+      prompt=`제시된 수보다 작은 수로 주사위 ${count}개를 놓아 보세요.`;
+      sub='제시된 수보다 작은 수를 골라 실제 주사위로 만들어 보세요.';
+      support='제시된 수와 주사위의 점 수를 비교해 보세요. 더 작은 수를 하나씩 찾아 놓으면 돼요.';
+    }else{
+      prompt=`제시된 수와 같은 수로 주사위 ${count}개를 놓아 보세요.`;
+      sub='제시된 수와 똑같은 수가 나오도록 실제 주사위를 놓아 보세요.';
+      support='제시된 수와 점의 개수가 똑같은 주사위를 놓아 보세요.';
+    }
+
+    visual=showAsNumber?`<div class="number-target">${target}</div>`:diceHtml([target]);
+
+    let equations='';
+    let answerLabel='';
+    if(relation==='gt'){
+      equations=answers.map(v=>`${target} < ${v}`).join(' &nbsp; ');
+      answerLabel='가능한 답';
+    }else if(relation==='lt'){
+      equations=answers.map(v=>`${target} > ${v}`).join(' &nbsp; ');
+      answerLabel='가능한 답';
+    }else{
+      equations=answers.map(v=>`${target} = ${v}`).join(' &nbsp; ');
+      answerLabel='정답';
+    }
+
+    answer=`<div class="answer-visual"><div class="relation-label">${answerLabel}</div>${diceHtml(answers)}<div class="math-line">${equations}</div></div>`;
+
+  }else if(currentMode==='make'){
+    skillArea='수감각·기초수개념'; skillSub='수의 합성·분해';
+    const max=Math.min(settings.range,count*6);
+    const min=Math.max(1,count);
+    const target=rand(min,Math.max(min,max));
+    prompt=`${target}을(를) 주사위 ${count}개로 만들어 보세요.`;
+    sub='같은 합을 만드는 방법은 여러 가지일 수 있어요.';
+    answer=`<div class="answer-visual">${diceHtml(makeParts(target,count))}<div class="math-line">${makeParts(target,count).join(' + ')} = ${target}</div></div>`;
+    support='먼저 큰 수를 하나 놓고, 남은 수가 얼마인지 생각해 보세요.';
+
+  }else if(currentMode==='evenodd'){
+    skillArea='수감각·기초수개념'; skillSub='홀수·짝수';
+    values=dice(count);
+    prompt=count===1?'이 주사위는 홀수일까요, 짝수일까요?':'각 주사위가 홀수인지 짝수인지 말해 보세요.';
+    sub='1·3·5는 홀수, 2·4·6은 짝수예요.';
+    answer=`<div class="answer-visual">${diceHtml(values)}<div class="math-line">${values.map(v=>`${v}→${v%2?'홀':'짝'}`).join(' · ')}</div></div>`;
+    support='점을 2개씩 짝지었을 때 하나가 남으면 홀수, 하나도 남지 않으면 짝수예요.';
+
+  }else if(currentMode==='add'){
+    skillArea='기초연산·유창성'; skillSub='한자리 덧셈·합 구하기';
+    const usedCount=Math.max(2,count);
+    values=dice(usedCount);
+    prompt=`주사위 ${usedCount}개의 수를 모두 더하면 얼마일까요?`;
+    sub=usedCount===2?'두 수를 합쳐 보세요.':'두 개씩 묶어 더한 뒤 다음 수를 이어 더해 보세요.';
+    answer=`<div class="answer-visual">${diceHtml(values)}<div class="math-line">${values.join(' + ')} = ${sum(values)}</div></div>`;
+    support=usedCount===2?`${values[0]}에서 ${values[1]}만큼 이어 세어 보세요.`:'한 번에 모두 계산하지 않아도 돼요. 두 수씩 차근차근 더해 보세요.';
+
+  }else if(currentMode==='multiply'){
+    skillArea='연산절차·전략'; skillSub='동수누가·곱셈 개념';
+    const groups=Math.max(2,count);
+    const a=rand(2,6);
+    values=Array.from({length:groups},()=>a);
+    prompt=`${a}이(가) ${groups}번 모이면 모두 얼마일까요?`;
+    sub=`같은 수 ${a}이(가) ${groups}묶음 있어요.`;
+    answer=`<div class="answer-visual">${diceHtml(values)}<div class="math-line">${a} × ${groups} = ${a*groups}</div></div>`;
+    support=`${Array(groups).fill(a).join(' + ')}처럼 같은 수를 여러 번 더한 것이 곱셈이에요.`;
+
+  }else if(currentMode==='multiplyRoll'){
+    skillArea='기초연산·유창성'; skillSub='곱셈구구·곱셈 사실 인출';
+    const a=rand(1,6);
+    const b=rand(5,9);
+    prompt='두 주사위를 곱하면 얼마일까요?';
+    sub='왼쪽은 1~6 주사위, 오른쪽은 5~9 주사위예요.';
+    visual=`<div class="multiply-live">
+      <div class="factor-card"><div class="factor-label">1~6 주사위</div>${dieHtml(a)}</div>
+      <div class="times-symbol">×</div>
+      <div class="factor-card"><div class="factor-label">5~9 주사위</div>${dieHtml(b,false,'high-die')}</div>
+    </div>`;
+    answer=`<div class="answer-visual"><div class="math-line">${a} × ${b} = ${a*b}</div></div>`;
+    support='먼저 두 주사위의 수를 읽고, 알고 있는 곱셈구구를 떠올려 보세요.';
+
+  }else if(currentMode==='groupcount'){
+    skillArea='수감각·기초수개념'; skillSub='묶어세기';
+    const step=Math.random()>.5?2:5;
+    const groups=Math.max(2,count);
+    values=Array.from({length:groups},()=>step);
+    prompt=`${step}씩 묶어 세어 보세요. 모두 얼마일까요?`;
+    sub=`${groups}개의 주사위가 모두 ${step}을(를) 보여요.`;
+    const seq=Array.from({length:groups},(_,i)=>step*(i+1));
+    answer=`<div class="answer-visual">${diceHtml(values)}<div class="math-line">${seq.join(' → ')}</div><div class="relation-label">모두 ${step*groups}</div></div>`;
+    support=`하나씩 세지 않고 ${step}, ${step*2}, ${step*3}${groups>3?'…':''}처럼 ${step}씩 커지게 세어 보세요.`;
+
+  }else if(currentMode==='make10'){
+    skillArea='수감각·기초수개념'; skillSub='10 만들기';
+    const a=rand(4,6), b=10-a;
+    values=[a];
+    prompt=`${a}에 얼마를 더하면 10이 될까요?`;
+    sub='10을 두 부분으로 나누어 생각해 봐요.';
+    answer=`<div class="answer-visual">${diceHtml([a,b])}<div class="math-line">${a} + ${b} = 10</div></div>`;
+    support=`10에서 ${a}을(를) 빼어 남은 수를 생각해도 좋아요.`;
+
+  }else if(currentMode==='beforeafter'){
+    skillArea='수감각·기초수개념'; skillSub='앞수·뒤수';
+    const center=rand(2,5);
+    const askBefore=Math.random()>.5;
+    values=[center];
+    prompt=`${center}의 바로 ${askBefore?'앞수':'뒤수'}는 무엇일까요?`;
+    sub=askBefore?'하나 작은 수를 찾아요.':'하나 큰 수를 찾아요.';
+    answer=`<div class="answer-visual">${diceHtml([center-1,center,center+1])}<div class="math-line">${center-1} < ${center} < ${center+1}</div><div class="relation-label">정답 ${askBefore?center-1:center+1}</div></div>`;
+    support=askBefore?`${center}에서 1을 빼면 앞수예요.`:`${center}에 1을 더하면 뒤수예요.`;
+
+  }else if(currentMode==='missing'){
+    skillArea='수감각·기초수개념'; skillSub='빠진 수';
+    const len=Math.max(3,Math.min(6,count+2));
+    const start=rand(1,7-len);
+    const seq=Array.from({length:len},(_,i)=>start+i);
+    const missIndex=rand(1,len-2);
+    const missing=seq[missIndex];
+    prompt='순서대로 놓인 수에서 빠진 수를 찾아 보세요.';
+    sub='앞수와 뒤수를 함께 보면 쉽게 찾을 수 있어요.';
+    visual=`<div class="sequence-row">${seq.map((v,i)=>i===missIndex?'<div class="number-box blank">?</div>':`<div class="number-box">${v}</div>`).join('')}</div>`;
+    answer=`<div class="answer-visual"><div class="sequence-row">${seq.map(v=>`<div class="number-box">${v}</div>`).join('')}</div><div class="relation-label">빠진 수는 ${missing}</div></div>`;
+    support=`?의 바로 앞은 ${seq[missIndex-1]}, 바로 뒤는 ${seq[missIndex+1]}예요.`;
+
+  }else if(currentMode==='mathwords'){
+    skillArea='수학언어'; skillSub='모두·같다·더 큰·더 작은';
+    let a=rand(1,6), b=rand(1,6);
+    const kinds=['all','compare'];
+    const kind=kinds[rand(0,kinds.length-1)];
+    values=[a,b];
+    if(kind==='all'){
+      prompt='두 주사위의 수를 모두 더하면 얼마일까요?';
+      sub='“모두”는 두 수를 합친다는 뜻이에요.';
+      answer=`<div class="answer-visual">${diceHtml(values)}<div class="math-line">${a} + ${b} = ${a+b}</div></div>`;
+      support='“모두”라는 말을 들으면 두 수를 합쳐서 생각해 보세요.';
+    }else{
+      if(a===b){
+        prompt='두 주사위의 점 개수가 같을까요?';
+        sub='두 주사위의 점 개수를 비교해 보세요.';
+        answer=`<div class="answer-visual">${highlightedDiceHtml(values,[0,1])}<div class="math-line">${a} = ${b}</div></div>`;
+        support='두 수가 똑같으면 = 기호를 써요.';
+      }else if(Math.random()>.5){
+        prompt='점이 더 많은 주사위는 어느 쪽인가요?';
+        sub='두 주사위의 점 개수를 비교해 보세요.';
+        answer=`<div class="answer-visual">${highlightedDiceHtml(values,[a>b?0:1])}<div class="math-line">${Math.min(a,b)} < ${Math.max(a,b)}</div></div>`;
+        support='점이 더 많은 쪽의 수가 더 커요.';
+      }else{
+        prompt='점이 더 적은 주사위는 어느 쪽인가요?';
+        sub='두 주사위의 점 개수를 비교해 보세요.';
+        answer=`<div class="answer-visual">${highlightedDiceHtml(values,[a<b?0:1])}<div class="math-line">${Math.min(a,b)} < ${Math.max(a,b)}</div></div>`;
+        support='점이 더 적은 쪽의 수가 더 작아요.';
+      }
+    }
+
+  }else if(currentMode==='spatial'){
+    skillArea='시각·공간'; skillSub='좌우·상하·위치·순서';
+    const usedCount=Math.max(3,count);
+    values=dice(usedCount);
+
+    if(spatialLayout==='vertical'){
+      const fromTop=Math.random()>.5;
+      const pos=rand(1,usedCount);
+      const idx=fromTop?pos-1:usedCount-pos;
+      prompt=`${fromTop?'위':'아래'}에서 ${pos}번째 주사위의 수는 얼마일까요?`;
+      sub='위와 아래 방향을 먼저 확인한 뒤 한 칸씩 세어 보세요.';
+      visual=makeSpatialVisual(values,'vertical');
+      answer=`<div class="answer-visual">${highlightedDiceHtml([values[idx]],[0])}<div class="relation-label">정답 ${values[idx]}</div></div>`;
+      support=`${fromTop?'위':'아래'}쪽 끝에서부터 1번째, 2번째… 하고 차례로 찾아보세요.`;
+
+    }else if(spatialLayout==='twoRows'){
+      const cols=Math.ceil(usedCount/2);
+      const topCount=cols;
+      const bottomCount=usedCount-cols;
+      const row=(bottomCount>0 && Math.random()>.5)?'bottom':'top';
+      const rowCount=row==='top'?topCount:bottomCount;
+      const fromLeft=Math.random()>.5;
+      const pos=rand(1,rowCount);
+      const col=fromLeft?pos-1:rowCount-pos;
+      const idx=row==='top'?col:cols+col;
+      prompt=`${fromLeft?'왼쪽':'오른쪽'}에서 ${pos}번째이고 ${row==='top'?'위':'아래'}에 있는 주사위의 수는 얼마일까요?`;
+      sub='가로 위치와 위·아래 위치를 함께 살펴보세요.';
+      visual=makeSpatialVisual(values,'twoRows');
+      answer=`<div class="answer-visual">${highlightedDiceHtml([values[idx]],[0])}<div class="relation-label">정답 ${values[idx]}</div></div>`;
+      support='먼저 위쪽 줄인지 아래쪽 줄인지 찾고, 그 줄에서 왼쪽 또는 오른쪽부터 순서를 세어 보세요.';
+
+    }else{
+      const fromLeft=Math.random()>.5;
+      const pos=rand(1,usedCount);
+      const idx=fromLeft?pos-1:usedCount-pos;
+      prompt=`${fromLeft?'왼쪽':'오른쪽'}에서 ${pos}번째 주사위의 수는 얼마일까요?`;
+      sub='가로 한 줄에서 방향을 먼저 확인하고 한 칸씩 세어 보세요.';
+      visual=makeSpatialVisual(values,'horizontal');
+      answer=`<div class="answer-visual">${highlightedDiceHtml([values[idx]],[0])}<div class="relation-label">정답 ${values[idx]}</div></div>`;
+      support=`${fromLeft?'왼쪽':'오른쪽'} 끝에서부터 1번째, 2번째… 하고 차례로 찾아보세요.`;
+    }
+  }
+
+  const shownVisual=visual || (values.length?diceHtml(values):'');
+  const showDiceSelector=!['irregularRead','multiplyRoll'].includes(currentMode);
+  setStage('learn',`
+    ${progressHtml()}
+    ${showDiceSelector?learnDiceSelectorHtml():''}
+    ${currentMode==='spatial'?spatialControlsHtml():''}
+    ${skillTagHtml(skillArea,skillSub)}
+    <div class="prompt">${prompt}</div>
+    <div class="subprompt">${sub}</div>
+    <div id="learnVisual">${shownVisual}</div>
+    <div class="answer-box" id="learnAnswer"></div>
+    ${supportBox(support)}
+    <div class="stage-actions">
+      <button class="btn big secondary" onclick="renderLearn()">🎲 새 문제</button>
+      ${currentMode==='compare'
+        ? `<button class="btn big yellow" onclick="checkCompareAnswer()">확인하기</button>`
+        : currentMode==='order'
+          ? `<button class="btn big ghost" onclick="resetOrderBoard()">다시 놓기</button>
+             <button class="btn big yellow" onclick="checkOrderAnswer()">확인하기</button>
+             <button class="btn big ghost" onclick="showOrderAnswer()">정답 보기</button>`
+          : `<button class="btn big yellow" onclick="document.getElementById('learnAnswer').innerHTML='${answer.replace(/'/g,"\\'")}'">정답 보기</button>`}
+      ${doneOrNext('renderLearn()')}
+      <button class="btn big ghost" onclick="showMenu('learn')">다른 활동</button>
+    </div>
+  `);
+  if(currentMode==='order') renderOrderSlots();
+}
+function makeParts(target,count){
+  count=Math.max(1,Math.min(6,count));
+  const parts=Array(count).fill(1);
+  let remain=target-count;
+  let i=0;
+  while(remain>0 && i<count*8){
+    const idx=i%count;
+    if(parts[idx]<6){
+      parts[idx]++;
+      remain--;
+    }
+    i++;
+  }
+  return parts;
+}
+function makeComposition(target){
+  const parts=makeParts(target,Math.min(6,Math.max(2,Math.ceil(target/6))));
+  return `${parts.join(' + ')} = ${target}`;
+}
+
+/* PRACTICE */
+function startPractice(mode){
+  currentMode=mode;
+  qIndex=0;
+  if(mode==='diceToNumber'){
+    practiceDiceCount=settings.diceCount;
+    practiceReadType='read';
+  }
+  if(mode==='evenodd'){
+    parityDiceCount=settings.diceCount;
+    parityMode='identify';
+  }
+  renderPractice();
+}
+function setPracticeDiceCount(n){
+  practiceDiceCount=Math.max(1,Math.min(6,Number(n)||1));
+  renderPractice();
+}
+function setPracticeReadType(type){
+  practiceReadType=(type==='sum')?'sum':'read';
+  renderPractice();
+}
+function practiceDiceSelectorHtml(){
+  return `<div class="practice-controls">
+    <span class="control-label">🎲 주사위 수</span>
+    <div class="seg">
+      ${[1,2,3,4,5,6].map(n=>`<button class="${practiceDiceCount===n?'active':''}" onclick="setPracticeDiceCount(${n})">${n}개</button>`).join('')}
+    </div>
+    ${practiceDiceCount>1?`
+      <span class="control-label">무엇을 말할까요?</span>
+      <div class="seg">
+        <button class="${practiceReadType==='read'?'active':''}" onclick="setPracticeReadType('read')">하나씩 읽기</button>
+        <button class="${practiceReadType==='sum'?'active':''}" onclick="setPracticeReadType('sum')">합 말하기</button>
+      </div>`:''}
+  </div>`;
+}
+function setParityDiceCount(n){
+  parityDiceCount=Math.max(1,Math.min(6,Number(n)||1));
+  if(parityDiceCount===1 && parityMode!=='identify') parityMode='identify';
+  renderPractice();
+}
+function setParityMode(mode){
+  parityMode=['identify','count','sumParity','rule'].includes(mode)?mode:'identify';
+  if(parityDiceCount===1 && parityMode!=='identify') parityMode='identify';
+  renderPractice();
+}
+function parityControlsHtml(){
+  return `<div class="practice-controls">
+    <span class="control-label">🎲 주사위 수</span>
+    <div class="seg">
+      ${[1,2,3,4,5,6].map(n=>`<button class="${parityDiceCount===n?'active':''}" onclick="setParityDiceCount(${n})">${n}개</button>`).join('')}
+    </div>
+    <span class="control-label">연습 단계</span>
+    <div class="seg">
+      <button class="${parityMode==='identify'?'active':''}" onclick="setParityMode('identify')">홀짝 구별</button>
+      ${parityDiceCount>1?`<button class="${parityMode==='count'?'active':''}" onclick="setParityMode('count')">몇 개인지</button>`:''}
+      ${parityDiceCount>1?`<button class="${parityMode==='sumParity'?'active':''}" onclick="setParityMode('sumParity')">합의 홀짝</button>`:''}
+      ${parityDiceCount===2?`<button class="${parityMode==='rule'?'active':''}" onclick="setParityMode('rule')">홀짝 규칙</button>`:''}
+    </div>
+  </div>`;
+}
+function parityLabel(v){ return v%2===0?'짝수':'홀수'; }
+function parityRuleText(a,b){
+  const pa=parityLabel(a), pb=parityLabel(b), ps=parityLabel(a+b);
+  return `${pa} + ${pb} = ${ps}`;
+}
+function parityWhyText(values){
+  const oddCount=values.filter(v=>v%2===1).length;
+  if(values.length===2){
+    const a=values[0], b=values[1];
+    if(a%2===1 && b%2===1) return '홀수 + 홀수 = 짝수예요. 홀수 두 개를 더하면 남는 1이 두 개가 되어 한 쌍이 됩니다.';
+    if(a%2===0 && b%2===0) return '짝수 + 짝수 = 짝수예요. 둘 다 2개씩 짝지어지므로 합쳐도 남는 것이 없습니다.';
+    return '홀수 + 짝수 = 홀수예요. 짝수 쪽은 모두 짝지어지고, 홀수의 남는 1이 그대로 남습니다.';
+  }
+  return oddCount%2===0
+    ? `홀수 주사위가 ${oddCount}개로 짝수 개예요. 홀수가 짝을 이루므로 전체 합은 짝수가 됩니다.`
+    : `홀수 주사위가 ${oddCount}개로 홀수 개예요. 홀수가 하나 남기 때문에 전체 합은 홀수가 됩니다.`;
+}
+function renderPractice(){
+  clearTimeout(hideTimer);
+  if(currentMode==='diceToNumber'){
+    currentDice=dice(practiceDiceCount);
+    const askSum=practiceDiceCount>1 && practiceReadType==='sum';
+    const prompt=practiceDiceCount===1
+      ? '주사위를 보고 수를 말해 보세요.'
+      : askSum
+        ? '주사위를 보고, 모두 더한 수를 말해 보세요.'
+        : '주사위를 보고, 왼쪽부터 수를 말해 보세요.';
+    const answer=askSum ? sum(currentDice) : currentDice.join(' · ');
+    const answerText=askSum
+      ? `합은 <b>${answer}</b>입니다.`
+      : `주사위 수는 <b>${answer}</b>입니다.`;
+    const supportText=askSum
+      ? `먼저 보이는 수를 하나씩 읽은 뒤, 두 수씩 묶어 더해 보세요.`
+      : practiceDiceCount===1
+        ? `점을 손가락으로 짚어 세어도 괜찮아요. 익숙해지면 한눈에 읽어 보세요.`
+        : `한꺼번에 보려고 하지 않아도 돼요. 왼쪽부터 하나씩 보고 말해 보세요.`;
+    setStage('practice',`
+      ${progressHtml()}
+      ${practiceDiceSelectorHtml()}
+      ${skillTagHtml('수감각·기초수개념','즉각적 수량 인식·세기')}
+      <div class="prompt">${prompt}</div>
+      <div class="subprompt">${practiceDiceCount}개의 주사위가 굴러졌어요.</div>
+      ${diceHtml(currentDice)}
+      <div class="answer-box" id="practiceAnswer"></div>
+      ${supportBox(supportText)}
+      <div class="stage-actions">
+        <button class="btn big secondary" onclick="renderPractice()">🎲 다시 굴리기</button>
+        <button class="btn big yellow" onclick="document.getElementById('practiceAnswer').innerHTML='${answerText.replace(/'/g,"\\'")}'">정답 보기</button>
+        ${doneOrNext('renderPractice()')}
+        <button class="btn big ghost" onclick="showMenu('practice')">다른 활동</button>
+      </div>`);
+  }else if(currentMode==='numberToDice'){
+    const max=Math.min(settings.range,settings.diceCount*6);
+    const min=Math.max(settings.diceCount,1);
+    const target=rand(min,Math.max(min,max));
+    setStage('practice',`
+      ${progressHtml()}
+      ${skillTagHtml('수감각·기초수개념','수량-기호 연결·수의 합성')}
+      <div class="prompt"><span style="font-size:1.5em">${target}</span></div>
+      <div class="subprompt">이 수를 실제 주사위 ${settings.diceCount}개로 만들어 보세요.</div>
+      <div class="answer-box" id="practiceAnswer"></div>
+      ${supportBox(`먼저 큰 수 하나를 놓고, 남은 수를 다른 주사위로 만들어 보세요.`)}
+      <div class="stage-actions">
+        <button class="btn big yellow" onclick="document.getElementById('practiceAnswer').innerHTML='예: ${makeDiceComposition(target,settings.diceCount)}'">한 가지 방법 보기</button>
+        ${doneOrNext('renderPractice()')}
+        <button class="btn big ghost" onclick="showMenu('practice')">다른 활동</button>
+      </div>`);
+  }else if(currentMode==='evenodd'){
+    currentDice=dice(parityDiceCount);
+    let prompt='', sub='', answer='', support='', extra='';
+    if(parityMode==='identify'){
+      if(parityDiceCount===1){
+        const v=currentDice[0];
+        prompt=`${v}은(는) 홀수일까요, 짝수일까요?`;
+        sub='2개씩 짝을 지었을 때 하나가 남는지 생각해 보세요.';
+        answer=`${v}은(는) <b>${parityLabel(v)}</b>입니다.`;
+        support='1·3·5는 홀수, 2·4·6은 짝수예요.';
+      }else{
+        prompt='각 주사위가 홀수인지 짝수인지 말해 보세요.';
+        sub='왼쪽부터 하나씩 차례대로 말해요.';
+        answer=currentDice.map(v=>`${v} → <b>${parityLabel(v)}</b>`).join(' &nbsp; / &nbsp; ');
+        support='1·3·5는 홀수, 2·4·6은 짝수예요.';
+      }
+    }else if(parityMode==='count'){
+      const odd=currentDice.filter(v=>v%2===1).length;
+      const even=parityDiceCount-odd;
+      prompt='홀수는 몇 개, 짝수는 몇 개일까요?';
+      sub='각 주사위를 홀수와 짝수로 나누어 보세요.';
+      answer=`홀수 <b>${odd}개</b> · 짝수 <b>${even}개</b>`;
+      support='먼저 홀수 1·3·5를 찾아 표시하듯 세어 보세요.';
+    }else if(parityMode==='sumParity'){
+      const total=sum(currentDice);
+      prompt='모든 주사위의 합은 홀수일까요, 짝수일까요?';
+      sub='먼저 더해도 되고, 홀수 주사위가 몇 개인지 살펴봐도 돼요.';
+      answer=`합은 <b>${total}</b>, 그래서 <b>${parityLabel(total)}</b>입니다.`;
+      support=parityWhyText(currentDice);
+      extra=`<div class="support" style="background:#fff8e8;border-color:#e8c66f"><b>💡 생각하는 방법</b>${parityWhyText(currentDice)}</div>`;
+    }else{
+      const a=currentDice[0], b=currentDice[1], total=a+b;
+      prompt=`${parityLabel(a)} + ${parityLabel(b)}의 합은 홀수일까요, 짝수일까요?`;
+      sub=`${a} + ${b}를 계산하기 전에 먼저 예상해 보세요.`;
+      answer=`${a} + ${b} = <b>${total}</b> → <b>${parityRuleText(a,b)}</b>`;
+      support=parityWhyText(currentDice);
+      extra=`<div class="support" style="background:#fff8e8;border-color:#e8c66f"><b>🧠 홀짝 규칙</b>
+        홀수 + 홀수 = 짝수<br>
+        짝수 + 짝수 = 짝수<br>
+        홀수 + 짝수 = 홀수
+      </div>`;
+    }
+    setStage('practice',`
+      ${progressHtml()}
+      ${parityControlsHtml()}
+      ${skillTagHtml('수감각·기초수개념','홀수·짝수')}
+      <div class="prompt">${prompt}</div>
+      <div class="subprompt">${sub}</div>
+      ${diceHtml(currentDice)}
+      <div class="answer-box" id="practiceAnswer"></div>
+      ${extra || supportBox(support)}
+      <div class="stage-actions">
+        <button class="btn big secondary" onclick="renderPractice()">🎲 다시 굴리기</button>
+        <button class="btn big yellow" onclick="document.getElementById('practiceAnswer').innerHTML='${answer.replace(/'/g,"\\'")}'">정답·설명 보기</button>
+        ${doneOrNext('renderPractice()')}
+        <button class="btn big ghost" onclick="showMenu('practice')">다른 활동</button>
+      </div>`);
+  }else if(currentMode==='memory'){
+    currentDice=dice();
+    const h=settings.hideSeconds;
+    setStage('practice',`
+      ${progressHtml()}
+      ${skillTagHtml('작업기억·주의집중','시각적 작업기억·순서 유지')}
+      <div class="prompt">잠깐 보고 기억해 보세요!</div>
+      <div class="subprompt">${h===0?'교사가 가리기 버튼을 눌러 주세요.':h+'초 뒤에 가려져요.'}</div>
+      <div id="memoryDice">${diceHtml(currentDice)}</div>
+      <div class="answer-box" id="practiceAnswer"></div>
+      ${supportBox(`주사위 수를 하나씩 소리 내어 말하면서 기억해도 좋아요.`)}
+      <div class="stage-actions">
+        <button class="btn big secondary" onclick="hideMemory()">가리기</button>
+        <button class="btn big yellow" onclick="showMemoryAnswer()">다시 보기</button>
+        ${doneOrNext('renderPractice()')}
+        <button class="btn big ghost" onclick="showMenu('practice')">다른 활동</button>
+      </div>`);
+    if(h>0) hideTimer=setTimeout(hideMemory,h*1000);
+  }else{
+    currentDice=dice();
+    setStage('practice',`
+      ${progressHtml()}
+      ${skillTagHtml('기초연산·유창성','한자리 덧셈·합 구하기')}
+      <div class="prompt">모든 주사위의 합은 얼마일까요?</div>
+      ${diceHtml(currentDice)}
+      <div class="answer-box" id="practiceAnswer"></div>
+      ${supportBox(`두 개씩 먼저 묶어 더한 뒤, 마지막에 합쳐 보세요.`)}
+      <div class="stage-actions">
+        <button class="btn big yellow" onclick="document.getElementById('practiceAnswer').innerHTML='합은 <b>${sum(currentDice)}</b>입니다.'">정답 보기</button>
+        ${doneOrNext('renderPractice()')}
+        <button class="btn big ghost" onclick="showMenu('practice')">다른 활동</button>
+      </div>`);
+  }
+}
+function hideMemory(){
+  const el=document.getElementById('memoryDice');if(el)el.innerHTML=diceHtml(currentDice,true);
+}
+function showMemoryAnswer(){
+  const el=document.getElementById('memoryDice');if(el)el.innerHTML=diceHtml(currentDice);
+  const ans=document.getElementById('practiceAnswer');if(ans)ans.innerHTML=`기억한 순서와 비교해 보세요.`;
+}
+function makeDiceComposition(target,count){
+  let parts=Array(count).fill(1), remain=target-count;
+  for(let i=0;i<count && remain>0;i++){let add=Math.min(5,remain);parts[i]+=add;remain-=add;}
+  return parts.join(' + ')+' = '+target;
+}
+
+/* PLAY */
+function startGame(mode){currentMode=mode;qIndex=0;renderGame();}
+function renderGame(){
+  if(currentMode==='target'){
+    const max=Math.min(settings.range,settings.diceCount*6);
+    const target=rand(Math.max(2,settings.diceCount),Math.max(2,max));
+    setStage('play',`
+      ${progressHtml()}
+      <div class="prompt">🎯 합이 <span style="font-size:1.25em">${target}</span>이 되게 만드세요!</div>
+      <div class="subprompt">주사위 ${settings.diceCount}개를 사용해요.</div>
+      ${supportBox(`🌱 먼저 주사위 2개로 합이 ${Math.min(target,8)}이 되게 만들어 보세요.`)}
+      <div class="stage-actions">
+        <button class="btn big yellow" onclick="document.getElementById('gameAnswer').innerHTML='한 가지 예: ${makeDiceComposition(target,settings.diceCount)}'">예시 보기</button>
+        ${doneOrNext('renderGame()')}
+        <button class="btn big ghost" onclick="showMenu('play')">다른 게임</button>
+      </div>
+      <div class="answer-box" id="gameAnswer"></div>`);
+  }else if(currentMode==='race'){
+    const missions = [
+      ()=>`짝수 ${Math.min(3,settings.diceCount)}개를 만드세요!`,
+      ()=>`홀수 ${Math.min(3,settings.diceCount)}개를 만드세요!`,
+      ()=>`모든 주사위의 합을 ${rand(settings.diceCount,Math.min(settings.range,settings.diceCount*6))}보다 크게 만드세요!`,
+      ()=>`같은 숫자 한 쌍을 만드세요!`,
+      ()=>`가장 큰 수 6을 하나 이상 만드세요!`
+    ];
+    const mission=missions[rand(0,missions.length-1)]();
+    setStage('play',`
+      ${progressHtml()}
+      <div class="prompt">⚡ ${mission}</div>
+      <div class="subprompt">준비되면 실제 주사위를 굴려 해결해 보세요.</div>
+      ${supportBox(`🌱 조건을 하나만 먼저 해결해도 좋아요. 천천히 확인해 보세요.`)}
+      <div class="stage-actions">
+        ${doneOrNext('renderGame()')}
+        <button class="btn big ghost" onclick="showMenu('play')">다른 게임</button>
+      </div>`);
+  }else if(currentMode==='survival'){
+    const odd=Math.random()>.5;
+    setStage('play',`
+      ${progressHtml()}
+      <div class="prompt">🛟 ${odd?'짝수는 OUT! 홀수만 살아남아요!':'홀수는 OUT! 짝수만 살아남아요!'}</div>
+      <div class="subprompt">한 번 굴리고 → OUT 주사위를 빼고 → 남은 주사위만 다시 굴려요.</div>
+      ${supportBox(`🌱 홀수는 1·3·5, 짝수는 2·4·6이에요.`)}
+      <div class="stage-actions">
+        ${doneOrNext('renderGame()')}
+        <button class="btn big ghost" onclick="showMenu('play')">다른 게임</button>
+      </div>`);
+  }else{
+    const target=rand(Math.max(6,settings.diceCount),Math.min(settings.range,settings.diceCount*6));
+    setStage('play',`
+      ${progressHtml()}
+      <div class="prompt">📍 목표수는 <span style="font-size:1.25em">${target}</span>!</div>
+      <div class="subprompt">주사위 ${settings.diceCount}개를 한 번 굴리고, 합이 목표수에 가장 가까운 사람이 이겨요.</div>
+      ${supportBox(`🌱 먼저 주사위 2개만 사용해 목표수와 얼마나 차이 나는지 비교해 보세요.`)}
+      <div class="stage-actions">
+        ${doneOrNext('renderGame()')}
+        <button class="btn big ghost" onclick="showMenu('play')">다른 게임</button>
+      </div>`);
+  }
+}
+
+/* JUMBO */
+function renderJumbo(v){
+  document.getElementById('jumboDie').innerHTML=dieHtml(v,true).replace('class="jumbo"','class="jumbo"');
+  // remove nested jumbo wrapper by replacing container inner with cells only
+  document.getElementById('jumboDie').innerHTML = dieHtml(v,true).replace(/^<div class="jumbo">/,'').replace(/<\/div>$/,'');
+  document.getElementById('jumboNumber').textContent=v;
+}
+function rollJumbo(){
+  let n=0;
+  const timer=setInterval(()=>{
+    renderJumbo(rand(1,6));
+    n++;
+    if(n>8){clearInterval(timer);renderJumbo(rand(1,6));}
+  },90);
+}
+
+/* SETTINGS */
+function renderSettings(){
+  const config=[
+    ['diceCountSeg',[1,2,3,4,5,6],'diceCount'],
+    ['rangeSeg',[6,9,20,50],'range'],
+    ['questionSeg',[5,10,15,20],'questions'],
+    ['hideSeg',[0,1,3,5],'hideSeconds']
+  ];
+  config.forEach(([id,vals,key])=>{
+    const el=document.getElementById(id);if(!el)return;
+    el.innerHTML=vals.map(v=>`<button class="${settings[key]===v?'active':''}" onclick="settings.${key}=${v};saveSettings()">${key==='hideSeconds'?(v===0?'사용 안 함':v+'초'):v}</button>`).join('');
+  });
+  const ops=[['read','수 읽기'],['add','덧셈'],['sub','뺄셈'],['mul','곱셈']];
+  const opEl=document.getElementById('operationSeg');
+  if(opEl)opEl.innerHTML=ops.map(([v,t])=>`<button class="${settings.operation===v?'active':''}" onclick="settings.operation='${v}';saveSettings()">${t}</button>`).join('');
+  const st=document.getElementById('supportToggle');if(st)st.checked=!!settings.support;
+  const sk=document.getElementById('skillTagToggle');if(sk)sk.checked=!!settings.showSkillTag;
+}
+
+renderSettings();
+renderJumbo(1);
+</script>
+</body>
+</html>
